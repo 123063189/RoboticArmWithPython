@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<head>
+<style type="text/css">
+.btn-lg{
+	width:300px;
+	height:150px;
+	font-weight:bold;
+}
+#speed{
+	width:130px;
+	height:100px;
+	font-size:50px;
+	font-weight:bold;
+}
+#autowork_delay{
+	width:150px;
+	height:100px;
+	font-size:50px;
+	font-weight:bold;
+}
+h1,h2{
+	display:inline;
+}
+.left{
+	float:left;
+	margin:30px;
+}
+.right{
+	float:right;
+	margin-right:30px;
+}
+.control-panel{
+	border-style:solid;
+	padding:10px;
+	padding-bottom:40px;
+	background-color:#DAD0DF;
+}
+.prog-panel{
+	border-style:solid;
+	padding:10px;
+	padding-bottom:30px;
+	background-color:#DAD0DF;
+}
+</style>
+   <title>Robotic Arm Wireless Control System</title>
+   <!-- Latest compiled and minified CSS -->
+   <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+   <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+   <!-- Optional theme -->
+   <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+   <!-- Latest compiled and minified JavaScript -->
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+	<h1>Robotic Arm Wireless Control System</h1><br>
+	<h2>Base Angle:</h2><h2 id="baseAngle">{{baseAngle}}</h2><br>
+	<h2>Up&Down Angle:</h2><h2 id="updownAngle">{{updownAngle}}</h2><br>
+	<h2>For&Backward Angle:</h2><h2 id="forbackwardAngle">{{forbackwardAngle}}</h2><br>
+	<h2 id="btnstatus">none</h2><br>
+	<br>
+	<div class="control-panel">
+	<h1 class="left">Operating Control Panel</h1>
+	<div class="right">
+	<h1>Speed:</h1>
+	<select id="speed" onchange="changeSpeed()">
+	{% for x in range(1, 15, +1) %}
+		<option value="{{x}}">{{x}}</option>
+	{% endfor %}
+	</select>
+	<h1>s</h1>
+	</div>
+	</br></br></br></br></br>
+		<div class="row">
+			<div class="col-sm">
+				<button class="btn btn-block btn-lg btn-primary" role="button" ontouchstart="moveUpStart()" ontouchend="stop()" onmousedown="moveUpStart()" onmouseup="stop()" style="font-size:50px;">Up</button>
+			</div>
+			<div class="col-sm">
+				<button class="btn btn-block btn-lg btn-primary" role="button" ontouchstart="moveLeftStart()"  ontouchend="stop()" onmousedown="moveLeftStart()" onmouseup="stop()" style="font-size:50px;">Left</button>
+			</div>
+			<div class="col-sm">
+				<button class="btn btn-block btn-lg btn-primary" role="button" ontouchstart="moveForwardStart()"  ontouchend="stop()" onmousedown="moveForwardStart()" onmouseup="stop()" style="font-size:50px;">Forward</button>
+			</div>
+			<div class="col-sm">
+				<button class="btn btn-block btn-lg btn-primary" role="button" onclick="pickUp()" style="font-size:50px;">Pick Up</button>
+			</div>
+		</div>
+		</br>
+		<div class="row">
+			<div class="col-sm">
+				<button class="btn btn-block btn-lg btn-primary" role="button" ontouchstart="moveDownStart()" ontouchend="stop()"onmousedown="moveDownStart()" onmouseup="stop()" style="font-size:50px;">Down</button>
+			</div>
+			<div class="col-sm">
+				<button class="btn btn-block btn-lg btn-primary" role="button" ontouchstart="moveRightStart()" ontouchend="stop()" onmousedown="moveRightStart()"onmouseup="stop()" style="font-size:50px;">Right</button>
+			</div>
+			<div class="col-sm">
+				<button class="btn btn-block btn-lg btn-primary" role="button" ontouchstart="moveBackwardStart()" ontouchend="stop()" onmousedown="moveBackwardStart()"onmouseup="stop()" style="font-size:50px;">Backward</button>
+			</div>
+			<div class="col-sm">
+				<button class="btn btn-block btn-lg btn-primary" role="button" onclick="drop()" style="font-size:50px;">Drop</button>
+			</div>
+		</div>
+	</div>
+	<br>
+
+
+
+	<div class="prog-panel">
+	<h1 class="left">Autowork Control Panel</h1>
+	<div class="right">
+	<h1>Delay/Action:</h1>
+	<select id="autowork_delay" onchange="changeDelay()">
+		{% for x in range(1, 100, +1) %}
+		<option value="{{x*1.0/10}}">{{x*1.0/10}}</option>
+		{% endfor %}
+	</select>
+	<h1>s</h1>
+	</div>
+	</br></br></br></br></br>
+		<div class="row">
+			<div class="col-sm">
+				<button id="startpoint" class="btn btn-block btn-lg btn-primary" role="button" onclick="setStartpoint()" style="font-size:50px;">Start Point</button>
+			</div>
+			<div class="col-sm">
+				<button id="endpoint" class="btn btn-block btn-lg btn-primary" role="button" onclick="setEndpoint()" style="font-size:50px;">End Point</button>
+			</div>
+			<div class="col-sm">
+				<button id="go" class="btn btn-block btn-lg btn-primary" role="button" onclick="go()" style="font-size:50px;">Go</button>
+			</div>
+		</div>
+		</br>
+	</div>
+	
+	<font color="red"><h1 id="autoWorkInfo">None</h1></font>
+</body>
+</html>
+<script>
+var timeStart, timeEnd, time;
+var baseAngle=0, updownAngle=0, forbackwardAngle=0, gripperAngle=0;
+angleUpdate();
+var baseAngle_s, updownAngle_s, forbackwardAngle_s, gripperAngle_s;
+var baseAngle_e, updownAngle_e, forbackwardAngle_e, gripperAngle_e;
+$("#autowork_delay").val("0.5");
+var autowork_delay=document.getElementById("autowork_delay").options[document.getElementById("autowork_delay").selectedIndex].value;
+var auto_status=1;
+$("#speed").val("5");
+var speed=document.getElementById("speed").options[document.getElementById("speed").selectedIndex].value;
+function getTimeNow()
+{
+	var now = new Date();
+	return now.getTime();
+}
+function changeSpeed()
+{
+	speed=document.getElementById("speed").options[document.getElementById("speed").selectedIndex].value;
+}
+function changeDelay()
+{
+	autowork_delay=document.getElementById("autowork_delay").options[document.getElementById("autowork_delay").selectedIndex].value;
+}
+function angleUpdate()
+{
+	$.get("get/baseAngle", function(angle){baseAngle=angle;});
+	$.get("get/updownAngle", function(angle){updownAngle=angle;});
+	$.get("get/forbackwardAngle", function(angle){forbackwardAngle=angle;});
+	$.get("get/gripperAngle", function(angle){gripperAngle=angle;});
+}
+function setStartpoint()
+{
+	$("#autoWorkInfo").text("Start point set!");
+	baseAngle_s = baseAngle;
+	updownAngle_s = updownAngle;
+	forbackwardAngle_s = forbackwardAngle;
+	gripperAngle_s = gripperAngle;
+}
+function setEndpoint()
+{
+	$("#autoWorkInfo").text("End point set!");
+	baseAngle_e = baseAngle;
+	updownAngle_e = updownAngle;
+	forbackwardAngle_e = forbackwardAngle;
+	gripperAngle_e = gripperAngle;
+}
+function go()
+{
+	if(auto_status==1){
+		$(document).ready(function(){
+			var autowork_data = new Object();
+			autowork_data.baseAngle_s = baseAngle_s;
+			autowork_data.updownAngle_s = updownAngle_s;
+			autowork_data.forbackwardAngle_s = forbackwardAngle_s;
+			autowork_data.gripperAngle_s = gripperAngle_s;
+			autowork_data.baseAngle_e = baseAngle_e;
+			autowork_data.updownAngle_e = updownAngle_e;
+			autowork_data.forbackwardAngle_e = forbackwardAngle_e;
+			autowork_data.gripperAngle_e = gripperAngle_e;
+			autowork_data.delay=autowork_delay;
+			autowork_data.autostatus=auto_status;
+			var data = JSON.stringify(autowork_data)
+		
+		$.ajax({
+			url:"/autowork",
+			type:"POST",
+			data: data
+		})
+		$("#go").text("Stop");
+		auto_status=0;
+		$("#autoWorkInfo").text("Started!");
+		})
+		
+	}
+	else{
+		$(document).ready(function(){
+			var autowork_data = new Object();
+			autowork_data.baseAngle_s = baseAngle_s;
+			autowork_data.updownAngle_s = updownAngle_s;
+			autowork_data.forbackwardAngle_s = forbackwardAngle_s;
+			autowork_data.gripperAngle_s = gripperAngle_s;
+			autowork_data.baseAngle_e = baseAngle_e;
+			autowork_data.updownAngle_e = updownAngle_e;
+			autowork_data.forbackwardAngle_e = forbackwardAngle_e;
+			autowork_data.gripperAngle_e = gripperAngle_e;
+			autowork_data.delay=autowork_delay;
+			autowork_data.autostatus=auto_status;
+			var data = JSON.stringify(autowork_data)
+		$.ajax({
+			url:"/autowork",
+			type:"POST",
+			data: data
+		})
+		$("#go").text("Go");
+		auto_status=1;
+		$("#autoWorkInfo").text("Stopped!");
+		})
+		
+	}
+	
+}
+function moveUpStart()
+{
+	timeStart=getTimeNow();
+	time=setInterval(function()
+	{
+		$.ajax({
+				type:"GET",
+				dataType:"html",
+				url:"up/start/"+speed
+				}		
+			);
+		angleUpdate();
+		document.getElementById("updownAngle").innerHTML=updownAngle
+	},100);
+}
+
+function stop()
+{
+	clearInterval(time);
+	document.getElementById("btnstatus").innerHTML="move stopped";
+	angleUpdate();
+	document.getElementById("updownAngle").innerHTML=updownAngle
+	document.getElementById("baseAngle").innerHTML=baseAngle
+	document.getElementById("forbackwardAngle").innerHTML=forbackwardAngle
+}
+function moveDownStart()
+{
+	timeStart=getTimeNow();
+	time=setInterval(function()
+	{
+		$.ajax({
+				type:"GET",
+				dataType:"html",
+				url:"down/start/"+speed
+				}		
+			);
+		angleUpdate();
+		document.getElementById("updownAngle").innerHTML=updownAngle
+	},100);
+}
+
+function moveLeftStart()
+{
+	timeStart=getTimeNow();
+	time=setInterval(function()
+	{
+		$.ajax({
+				type:"GET",
+				dataType:"html",
+				url:"left/start/"+speed
+				}		
+			);
+		angleUpdate();
+		document.getElementById("baseAngle").innerHTML=baseAngle
+	},100);
+}
+
+function moveRightStart()
+{
+	timeStart=getTimeNow();
+	time=setInterval(function()
+	{
+		$.ajax({
+				type:"GET",
+				dataType:"html",
+				url:"right/start/"+speed
+				}		
+			);
+		angleUpdate();
+		document.getElementById("baseAngle").innerHTML=baseAngle
+	},100);
+}
+
+function moveForwardStart()
+{
+	timeStart=getTimeNow();
+	time=setInterval(function()
+	{
+		$.ajax({
+				type:"GET",
+				dataType:"html",
+				url:"forward/start/"+speed
+				}		
+			);
+		angleUpdate();
+		document.getElementById("forbackwardAngle").innerHTML=forbackwardAngle
+	},100);
+}
+
+function moveBackwardStart()
+{
+	timeStart=getTimeNow();
+	time=setInterval(function()
+	{
+		$.ajax({
+				type:"GET",
+				dataType:"html",
+				url:"backward/start/"+speed
+				}		
+			);
+		angleUpdate();
+		document.getElementById("forbackwardAngle").innerHTML=forbackwardAngle
+	},100);
+	
+}
+
+function pickUp()
+{
+	gripperAngle = 90;
+	$.ajax({
+			type:"GET",
+			dataType:"html",
+			url:"gripper/pickup/"+speed
+		}		
+	)
+}
+function drop()
+{
+	gripperAngle = 40;
+	$.ajax({
+			type:"GET",
+			dataType:"html",
+			url:"gripper/drop/"+speed
+		}		
+	)
+}
+
+</script>
